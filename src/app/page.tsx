@@ -20,6 +20,14 @@ export default function Home() {
   const [data, setData] = useState([...nums]);
   const [show, setShow] = useState([...display]);
   const [clicked, setClicked] = useState(0);
+  const [first, setFirst] = useState<number[]>([]);
+  const [second, setSecond] = useState<number[]>([]);
+
+  function nextTurn() {
+    setClicked(0);
+    setFirst([]);
+    setSecond([]);
+  }
 
   function handleClick(colIdx: number, rowIdx: number) {
     if (clicked < 2) {
@@ -27,11 +35,31 @@ export default function Home() {
       cloneArr[colIdx][rowIdx] = true;
       setShow([...cloneArr]);
       setClicked(clicked + 1);
+      if (first.length === 0) {
+        setFirst([colIdx, rowIdx]);
+      } else {
+        setSecond([colIdx, rowIdx]);
+      }
     }
   }
 
   useEffect(() => {
     if (clicked === 2) {
+      const timer = setTimeout(() => {
+        const firstClick = data[first[0]][first[1]];
+        const secondClick = data[second[0]][second[1]];
+
+        if (firstClick !== secondClick) {
+          let cloneArr = [...show];
+          cloneArr[first[0]][first[1]] = false;
+          cloneArr[second[0]][second[1]] = false;
+          setShow([...cloneArr]);
+          nextTurn();
+        } else {
+          nextTurn();
+        }
+      }, 1000);
+      return () => clearTimeout(timer);
     }
   }, [clicked]);
 
