@@ -2,7 +2,15 @@
 
 import { useEffect, useState } from 'react';
 
-export default function StartMenu({ setRules }: { setRules: any }) {
+export default function StartMenu({
+  setRules,
+  readyToPlay,
+  setStatus,
+}: {
+  setRules: any;
+  setStatus: any;
+  readyToPlay: boolean;
+}) {
   const [listOfOptions, setListOfOption] = useState({
     theme: [
       { name: 'numbers', isSelected: false },
@@ -75,10 +83,22 @@ export default function StartMenu({ setRules }: { setRules: any }) {
     });
   }
 
-  function StartButton({ children }: { children: string }) {
+  function startGame() {
+    setStatus('game');
+  }
+
+  function StartButton({
+    children,
+    readyToPlay,
+  }: {
+    children: string;
+    readyToPlay: boolean;
+  }) {
     return (
       <button
         type="button"
+        disabled={!readyToPlay}
+        onClick={startGame}
         className={`w-full py-2.5 px-5 me-2 mb-2 text-3xl font-medium text-gray-900 focus:outline-none bg-white rounded-full border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700`}
       >
         {children}
@@ -139,7 +159,7 @@ export default function StartMenu({ setRules }: { setRules: any }) {
           </div>
         </div>
         <div>
-          <StartButton>StartGame</StartButton>
+          <StartButton readyToPlay={readyToPlay}>StartGame</StartButton>
         </div>
       </div>
     </section>
