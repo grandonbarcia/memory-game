@@ -1,6 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
+import useWindowSize from '../hooks/useWindowSize';
+import ModalButton from './Modal';
 
 const nums = [
   [1, 4, 4, 9],
@@ -23,6 +25,12 @@ export default function Game() {
   const [first, setFirst] = useState<number[]>([]);
   const [second, setSecond] = useState<number[]>([]);
 
+  const windowSize = useWindowSize();
+
+  useEffect(() => {
+    console.log(windowSize);
+  }, [windowSize]);
+
   function nextTurn() {
     setClicked(0);
     setFirst([]);
@@ -41,6 +49,27 @@ export default function Game() {
         setSecond([colIdx, rowIdx]);
       }
     }
+  }
+
+  function RegularButton() {
+    return (
+      <div>
+        <button
+          className="py-2.5 px-5 me-2 mb-2 text-3xl font-medium text-gray-900 focus:outline-none 
+          bg-Sage
+         rounded-full border border-gray-200 hover:bg-gray-100 hover:text-Beige focus:z-10 focus:ring-4 focus:ring-gray-200 "
+        >
+          restart
+        </button>
+        <button
+          className="py-2.5 px-5 me-2 mb-2 text-3xl font-medium text-gray-900 focus:outline-none 
+          
+         rounded-full border border-gray-200 hover:bg-gray-100 hover:text-Beige focus:z-10 focus:ring-4 focus:ring-gray-200 "
+        >
+          new game
+        </button>
+      </div>
+    );
   }
 
   useEffect(() => {
@@ -65,15 +94,14 @@ export default function Game() {
 
   return (
     <>
-      <main className="flex min-h-screen flex-col items-center p-24 gap-10">
-        <div className="flex w-3/6 justify-between">
-          <div>memory game</div>
-          <div className="flex w-1/6 justify-between">
-            <div>Restart</div>
-            <div>New Game</div>
+      <div className="h-screen w-screen flex flex-col items-center justify-center ">
+        <div className="flex w-4/5 md:w-2/3 lg:w-2/3 items-center justify-between">
+          <div className="text-4xl">memory game</div>
+          <div className="flex justify-between">
+            {windowSize.width < 768 ? <ModalButton /> : <RegularButton />}
           </div>
         </div>
-        <div className="flex w-3/6 justify-center items-center flex-col gap-5 ">
+        <div className="h-[60vh] w-full sm:h-[70vh]  flex justify-center items-center flex-col gap-5 px-5 ">
           {data.map((row, rowIdx) => (
             <div
               key={rowIdx}
@@ -82,24 +110,30 @@ export default function Game() {
               {row.map((col, colIdx) => (
                 <div
                   key={colIdx}
-                  className="flex justify-center items-center w-32 h-32"
+                  className="flex justify-center items-center w-24 h-24 sm:w-32 sm:h-32"
                   onClick={() => handleClick(rowIdx, colIdx)}
                 >
                   {show[rowIdx][colIdx] ? (
-                    col
+                    <div className="text-5xl text-Yellow">{col}</div>
                   ) : (
-                    <div className="h-full w-full bg-red-400 rounded-full"></div>
+                    <div className="h-full w-full bg-Beige rounded-full"></div>
                   )}
                 </div>
               ))}
             </div>
           ))}
         </div>
-        <div className="flex gap-5">
-          <div>Time 0:00</div>
-          <div>Moves 0 </div>
+        <div className="w-full flex justify-center gap-5 text-center px-5">
+          <div className="w-1/2 md:w-80 bg-Sage p-3 md:p-6 rounded-xl flex flex-col md:flex-row md:justify-between gap-3">
+            <div className="text-2xl text-Yellow">Time</div>
+            <div className="text-3xl text-Beige">0:00</div>
+          </div>
+          <div className="w-1/2 md:w-80 bg-Sage p-3 md:p-6 rounded-xl flex flex-col md:flex-row md:justify-between gap-3">
+            <div className="text-2xl text-Yellow">Moves </div>
+            <div className="text-3xl text-Beige">0</div>
+          </div>
         </div>
-      </main>
+      </div>
     </>
   );
 }

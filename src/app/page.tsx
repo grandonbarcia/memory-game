@@ -5,7 +5,7 @@ import StartMenu from './components/StartMenu';
 import Game from './components/Game';
 import End from './components/End';
 export default function Home() {
-  const [status, setStatus] = useState('menu');
+  const [status, setStatus] = useState('game');
   const [rules, setRules] = useState({});
   const [readyToPlay, setReady] = useState(false);
 
@@ -31,9 +31,5 @@ export default function Home() {
       setReady(true);
     }
   }, [rules]);
-  return (
-    <>
-      <main className="">{game(status)}</main>
-    </>
-  );
+  return <>{game(status)}</>;
 }
