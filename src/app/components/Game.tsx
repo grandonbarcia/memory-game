@@ -49,6 +49,10 @@ export default function Game({
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    console.log(timer);
+  }, [timer]);
+
   function nextTurn() {
     setClicked(0);
     setFirst([]);
