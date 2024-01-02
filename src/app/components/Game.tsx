@@ -38,10 +38,9 @@ export default function Game({
   const windowSize = useWindowSize();
 
   useEffect(() => {
-    let interval: any;
-    console.log('Start', status);
+    let interval: number;
     if (status === 'game') {
-      interval = setInterval(() => {
+      interval = window.setInterval(() => {
         setTimer((prevTime: number) => prevTime + 1);
       }, 1000);
     }
@@ -49,14 +48,67 @@ export default function Game({
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {
-    console.log(timer);
-  }, [timer]);
+  function coverBoard(num: number) {
+    return Array(num)
+      .fill(0)
+      .map(() => new Array(num).fill(false));
+  }
+
+  function randomizeArr(array: number[]) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const temp = array[i];
+      array[i] = array[j];
+      array[j] = temp;
+    }
+    return array;
+  }
+
+  function create2dArr(array: number[], size: number) {
+    const my2DArr: number[][] = [];
+    for (let i = 0; i < size; i++) {
+      my2DArr[i] = [];
+      for (let j = 0; j < size; j++) {
+        let temp: any = array.shift();
+        my2DArr[i][j] = temp;
+      }
+    }
+
+    return my2DArr;
+  }
+
+  function populateArr(size: number) {
+    const count = (size * size) / 2;
+    let arr = [];
+    for (let i = 1; i <= 8; i++) {
+      arr.push(i);
+      arr.push(i);
+    }
+
+    return arr;
+  }
+
+  function createNewBoard(num: number) {
+    const filledArr = populateArr(num);
+    const newArr = randomizeArr([...filledArr]);
+    const newArr2d = create2dArr([...newArr], num);
+    console.log(newArr2d);
+    setData([...newArr2d]);
+  }
 
   function nextTurn() {
     setClicked(0);
     setFirst([]);
     setSecond([]);
+  }
+
+  function restartGame() {
+    setShow(coverBoard(4));
+    setClicked(0);
+    setFirst([]);
+    setSecond([]);
+    setTimer(0);
+    countMoves(0);
   }
 
   function handleClick(colIdx: number, rowIdx: number) {
@@ -80,6 +132,7 @@ export default function Game({
           className="py-2.5 px-5 me-2 mb-2 text-3xl font-medium text-gray-900 focus:outline-none 
           bg-Sage
          rounded-full border border-gray-200 hover:bg-gray-100 hover:text-Beige focus:z-10 focus:ring-4 focus:ring-gray-200 "
+          onClick={restartGame}
         >
           restart
         </button>
