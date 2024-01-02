@@ -33,7 +33,7 @@ export default function Game({
   const [second, setSecond] = useState<number[]>([]);
 
   const [timer, setTimer] = useState(0);
-  const [moves, setMoves] = useState(0);
+  const [moves, countMoves] = useState(0);
 
   const windowSize = useWindowSize();
 
@@ -105,10 +105,12 @@ export default function Game({
           cloneArr[first[0]][first[1]] = false;
           cloneArr[second[0]][second[1]] = false;
           setShow([...cloneArr]);
+
           nextTurn();
         } else {
           nextTurn();
         }
+        countMoves((prevMoves) => prevMoves + 1);
       }, 1000);
       return () => clearTimeout(timer);
     }
@@ -133,12 +135,14 @@ export default function Game({
                 <div
                   key={colIdx}
                   className="flex justify-center items-center w-24 h-24 sm:w-32 sm:h-32"
-                  onClick={() => handleClick(rowIdx, colIdx)}
                 >
                   {show[rowIdx][colIdx] ? (
                     <div className="text-5xl text-Yellow">{col}</div>
                   ) : (
-                    <div className="h-full w-full bg-Beige rounded-full"></div>
+                    <div
+                      className="h-full w-full bg-Beige rounded-full"
+                      onClick={() => handleClick(rowIdx, colIdx)}
+                    ></div>
                   )}
                 </div>
               ))}
@@ -152,7 +156,7 @@ export default function Game({
           </div>
           <div className="w-1/2 md:w-80 bg-Sage p-3 md:p-6 rounded-xl flex flex-col md:flex-row md:justify-between gap-3">
             <div className="text-2xl text-Yellow">Moves </div>
-            <div className="text-3xl text-Beige">0</div>
+            <div className="text-3xl text-Beige">{moves}</div>
           </div>
         </div>
       </div>
