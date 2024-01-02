@@ -3,6 +3,7 @@
 import { useState, useEffect, use } from 'react';
 import useWindowSize from '../hooks/useWindowSize';
 import ModalButton from './Modal';
+import Timer from './Timer';
 
 const nums = [
   [1, 4, 4, 9],
@@ -18,18 +19,35 @@ const display = [
   [false, false, false, false],
 ];
 
-export default function Game() {
+export default function Game({
+  rules,
+  status,
+}: {
+  rules: object;
+  status: string;
+}) {
   const [data, setData] = useState([...nums]);
   const [show, setShow] = useState([...display]);
   const [clicked, setClicked] = useState(0);
   const [first, setFirst] = useState<number[]>([]);
   const [second, setSecond] = useState<number[]>([]);
 
+  const [timer, setTimer] = useState(0);
+  const [moves, setMoves] = useState(0);
+
   const windowSize = useWindowSize();
 
   useEffect(() => {
-    console.log(windowSize);
-  }, [windowSize]);
+    let interval: any;
+    console.log('Start', status);
+    if (status === 'game') {
+      interval = setInterval(() => {
+        setTimer((prevTime: number) => prevTime + 1);
+      }, 1000);
+    }
+
+    return () => clearInterval(interval);
+  }, []);
 
   function nextTurn() {
     setClicked(0);
@@ -126,7 +144,7 @@ export default function Game() {
         <div className="w-full flex justify-center gap-5 text-center px-5">
           <div className="w-1/2 md:w-80 bg-Sage p-3 md:p-6 rounded-xl flex flex-col md:flex-row md:justify-between gap-3">
             <div className="text-2xl text-Yellow">Time</div>
-            <div className="text-3xl text-Beige">0:00</div>
+            <Timer timer={timer} />
           </div>
           <div className="w-1/2 md:w-80 bg-Sage p-3 md:p-6 rounded-xl flex flex-col md:flex-row md:justify-between gap-3">
             <div className="text-2xl text-Yellow">Moves </div>

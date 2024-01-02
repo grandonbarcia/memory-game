@@ -20,7 +20,7 @@ export default function Home() {
           />
         );
       case 'game':
-        return <Game />;
+        return <Game rules={rules} status={status} />;
       case 'end':
         return <End />;
     }
