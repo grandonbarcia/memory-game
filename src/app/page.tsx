@@ -5,9 +5,17 @@ import StartMenu from './components/StartMenu';
 import Game from './components/Game';
 import End from './components/End';
 export default function Home() {
-  const [status, setStatus] = useState('game');
-  const [rules, setRules] = useState({});
+  const [status, setStatus] = useState('menu');
+  const [rules, setRules] = useState({
+    theme: 'numbers',
+    players: '1',
+    grid: '4x4',
+  });
   const [readyToPlay, setReady] = useState(false);
+
+  useEffect(() => {
+    console.log(rules);
+  }, [rules]);
 
   function game(status: string) {
     switch (status) {
@@ -20,7 +28,7 @@ export default function Home() {
           />
         );
       case 'game':
-        return <Game rules={rules} status={status} />;
+        return <Game rules={rules} status={status} setStatus={setStatus} />;
       case 'end':
         return <End />;
     }

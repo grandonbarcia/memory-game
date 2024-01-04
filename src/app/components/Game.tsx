@@ -5,50 +5,40 @@ import useWindowSize from '../hooks/useWindowSize';
 import ModalButton from './Modal';
 import Timer from './Timer';
 
-const nums = [
-  [1, 4, 4, 9],
-  [7, 6, 3, 8],
-  [6, 3, 5, 1],
-  [7, 9, 5, 8],
-];
-
-const display = [
-  [false, false, false, false],
-  [false, false, false, false],
-  [false, false, false, false],
-  [false, false, false, false],
-];
-
 export default function Game({
   rules,
   status,
+  setStatus,
 }: {
-  rules: object;
+  rules: any;
   status: string;
+  setStatus: any;
 }) {
-  const [data, setData] = useState([...nums]);
-  const [show, setShow] = useState([...display]);
+  const [data, setData] = useState(createNewBoard());
+  const [show, setShow] = useState(coverBoard());
   const [clicked, setClicked] = useState(0);
   const [first, setFirst] = useState<number[]>([]);
   const [second, setSecond] = useState<number[]>([]);
 
   const [timer, setTimer] = useState(0);
   const [moves, countMoves] = useState(0);
+  const [gameStart, startGame] = useState(false);
 
   const windowSize = useWindowSize();
 
   useEffect(() => {
     let interval: number;
-    if (status === 'game') {
+    if (gameStart) {
       interval = window.setInterval(() => {
         setTimer((prevTime: number) => prevTime + 1);
       }, 1000);
     }
 
     return () => clearInterval(interval);
-  }, []);
+  }, [gameStart]);
 
-  function coverBoard(num: number) {
+  function coverBoard() {
+    const num = parseInt(rules.grid.split('').shift());
     return Array(num)
       .fill(0)
       .map(() => new Array(num).fill(false));
@@ -80,7 +70,7 @@ export default function Game({
   function populateArr(size: number) {
     const count = (size * size) / 2;
     let arr = [];
-    for (let i = 1; i <= 8; i++) {
+    for (let i = 1; i <= count; i++) {
       arr.push(i);
       arr.push(i);
     }
@@ -88,12 +78,12 @@ export default function Game({
     return arr;
   }
 
-  function createNewBoard(num: number) {
+  function createNewBoard() {
+    const num = parseInt(rules.grid.split('').shift()!);
     const filledArr = populateArr(num);
     const newArr = randomizeArr([...filledArr]);
     const newArr2d = create2dArr([...newArr], num);
-    console.log(newArr2d);
-    setData([...newArr2d]);
+    return newArr2d;
   }
 
   function nextTurn() {
@@ -103,7 +93,7 @@ export default function Game({
   }
 
   function restartGame() {
-    setShow(coverBoard(4));
+    setShow(coverBoard());
     setClicked(0);
     setFirst([]);
     setSecond([]);
@@ -111,9 +101,15 @@ export default function Game({
     countMoves(0);
   }
 
+  function createNewGame() {
+    setShow(coverBoard());
+    setStatus('menu');
+  }
+
   function handleClick(colIdx: number, rowIdx: number) {
+    startGame(true);
     if (clicked < 2) {
-      let cloneArr = [...show];
+      let cloneArr = [...show!];
       cloneArr[colIdx][rowIdx] = true;
       setShow([...cloneArr]);
       setClicked(clicked + 1);
@@ -140,6 +136,7 @@ export default function Game({
           className="py-2.5 px-5 me-2 mb-2 text-3xl font-medium text-gray-900 focus:outline-none 
           
          rounded-full border border-gray-200 hover:bg-gray-100 hover:text-Beige focus:z-10 focus:ring-4 focus:ring-gray-200 "
+          onClick={createNewGame}
         >
           new game
         </button>
@@ -150,11 +147,11 @@ export default function Game({
   useEffect(() => {
     if (clicked === 2) {
       const timer = setTimeout(() => {
-        const firstClick = data[first[0]][first[1]];
-        const secondClick = data[second[0]][second[1]];
+        const firstClick = data![first[0]][first[1]];
+        const secondClick = data![second[0]][second[1]];
 
         if (firstClick !== secondClick) {
-          let cloneArr = [...show];
+          let cloneArr = [...show!];
           cloneArr[first[0]][first[1]] = false;
           cloneArr[second[0]][second[1]] = false;
           setShow([...cloneArr]);
@@ -179,7 +176,7 @@ export default function Game({
           </div>
         </div>
         <div className="h-[60vh] w-full sm:h-[70vh]  flex justify-center items-center flex-col gap-5 px-5 ">
-          {data.map((row, rowIdx) => (
+          {data!.map((row, rowIdx) => (
             <div
               key={rowIdx}
               className="flex gap-3 w-full text-center justify-center items-center"
@@ -187,9 +184,11 @@ export default function Game({
               {row.map((col, colIdx) => (
                 <div
                   key={colIdx}
-                  className="flex justify-center items-center w-24 h-24 sm:w-32 sm:h-32"
+                  className={`flex justify-center items-center w-24 h-24 ${
+                    rules.grid === '6x6' ? 'sm:w-20 sm:h-20' : 'sm:w-32 sm:h-32'
+                  }`}
                 >
-                  {show[rowIdx][colIdx] ? (
+                  {show![rowIdx][colIdx] ? (
                     <div className="text-5xl text-Yellow">{col}</div>
                   ) : (
                     <div

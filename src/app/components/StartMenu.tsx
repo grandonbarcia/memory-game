@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 
 export default function StartMenu({
   setRules,
@@ -13,20 +13,28 @@ export default function StartMenu({
 }) {
   const [listOfOptions, setListOfOption] = useState({
     theme: [
-      { name: 'numbers', isSelected: false },
+      { name: 'numbers', isSelected: true },
       { name: 'icons', isSelected: false },
     ],
     players: [
-      { name: '1', isSelected: false },
+      { name: '1', isSelected: true },
       { name: '2', isSelected: false },
       { name: '3', isSelected: false },
       { name: '4', isSelected: false },
     ],
     grid: [
-      { name: '4x4', isSelected: false },
+      { name: '4x4', isSelected: true },
       { name: '6x6', isSelected: false },
     ],
   });
+
+  useEffect(() => {
+    setRules({
+      theme: 'numbers',
+      players: '1',
+      grid: '4x4',
+    });
+  }, []);
 
   function Title({ children }: { children: string }) {
     return <h3 className="text-2xl">{children}</h3>;
@@ -99,7 +107,7 @@ export default function StartMenu({
         type="button"
         disabled={!readyToPlay}
         onClick={startGame}
-        className={`w-full py-2.5 px-5 me-2 mb-2 text-3xl font-medium text-gray-900 focus:outline-none bg-white rounded-full border border-gray-200 hover:bg-gray-100 hover:text-Beige focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700`}
+        className={`w-full py-2.5 px-5 me-2 mb-2 text-3xl font-medium text-gray-900 focus:outline-none bg-Yellow rounded-full border border-gray-200 hover:bg-gray-100 hover:text-Beige focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700`}
       >
         {children}
       </button>
@@ -159,7 +167,7 @@ export default function StartMenu({
           </div>
         </div>
         <div>
-          <StartButton readyToPlay={readyToPlay}>StartGame</StartButton>
+          <StartButton readyToPlay={readyToPlay}>Start Game</StartButton>
         </div>
       </div>
     </section>
