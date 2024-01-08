@@ -4,6 +4,7 @@ import { useState, useEffect, use } from 'react';
 import useWindowSize from '../hooks/useWindowSize';
 import ModalButton from './Modal';
 import Timer from './Timer';
+import useIcons from '../hooks/useIcons';
 
 export default function Game({
   rules,
@@ -25,6 +26,9 @@ export default function Game({
   const [gameStart, startGame] = useState(false);
 
   const windowSize = useWindowSize();
+  const icons = useIcons();
+
+  useEffect(() => console.log(data), [data]);
 
   useEffect(() => {
     let interval: number;
@@ -189,7 +193,7 @@ export default function Game({
                   }`}
                 >
                   {show![rowIdx][colIdx] ? (
-                    <div className="text-5xl text-Yellow">{col}</div>
+                    <div className="text-7xl text-Yellow">{icons[col]}</div>
                   ) : (
                     <div
                       className="h-full w-full bg-Beige rounded-full"
