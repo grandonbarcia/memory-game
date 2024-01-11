@@ -18,6 +18,7 @@ import {
   GiChimney,
   GiCutDiamond,
   GiDiceFire,
+  GiBoneGnawer,
 } from 'react-icons/gi';
 
 export default function useIcons() {
@@ -40,6 +41,7 @@ export default function useIcons() {
     <GiChimney />,
     <GiCutDiamond />,
     <GiDiceFire />,
+    <GiBoneGnawer />,
   ];
   return useIcons;
 }
