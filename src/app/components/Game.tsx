@@ -192,6 +192,17 @@ export default function Game({
         if (rules.player === '1') {
           countMoves((prevMoves) => prevMoves + 1);
         } else {
+          console.log('hahah');
+          setMultiPlayerScore((prevState: []) => {
+            console.log(prevState);
+            const currentTurn = prevState.findIndex(
+              (el: { score: number; turn: boolean }) => el.turn
+            );
+            console.log(currentTurn);
+            const nextTurn = currentTurn + 1;
+
+            return prevState;
+          });
         }
       }, 1000);
       return () => clearTimeout(timer);
