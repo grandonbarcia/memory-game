@@ -5,6 +5,8 @@ import useWindowSize from '../hooks/useWindowSize';
 import ModalButton from './Modal';
 import Timer from './Timer';
 import useIcons from '../hooks/useIcons';
+import SinglePlayer from './SinglePlayer';
+import Multiplayer from './MultiPlayer';
 
 export default function Game({
   rules,
@@ -25,6 +27,13 @@ export default function Game({
   const [moves, countMoves] = useState(0);
   const [gameStart, startGame] = useState(false);
 
+  const [multiplayerScore, setMultiPlayerScore] = useState(generatePlayers());
+
+  const score = {
+    player1: { score: 0, turn: true },
+    player2: { score: 0, turn: false },
+  };
+
   const windowSize = useWindowSize();
   const icons = useIcons();
 
@@ -40,6 +49,22 @@ export default function Game({
 
     return () => clearInterval(interval);
   }, [gameStart]);
+
+  function generatePlayers() {
+    if (rules.player === '1') return;
+    let players: any = [];
+    const forPlayerOne = { score: 0, turn: true };
+    const forRestOfPlayers = { score: 0, turn: false };
+    for (let i = 1; i <= rules.players; i++) {
+      if (i === 1) {
+        players.push(forPlayerOne);
+      } else {
+        players.push(forRestOfPlayers);
+      }
+    }
+
+    return JSON.parse(JSON.stringify(players));
+  }
 
   function coverBoard() {
     const num = parseInt(rules.grid.split('').shift());
@@ -164,7 +189,10 @@ export default function Game({
         } else {
           nextTurn();
         }
-        countMoves((prevMoves) => prevMoves + 1);
+        if (rules.player === '1') {
+          countMoves((prevMoves) => prevMoves + 1);
+        } else {
+        }
       }, 1000);
       return () => clearTimeout(timer);
     }
@@ -193,7 +221,9 @@ export default function Game({
                   }`}
                 >
                   {show![rowIdx][colIdx] ? (
-                    <div className="text-7xl text-Yellow">{icons[col]}</div>
+                    <div className="text-7xl text-Yellow">
+                      {rules.theme === 'numbers' ? col : icons[col]}
+                    </div>
                   ) : (
                     <div
                       className="h-full w-full bg-Beige rounded-full"
@@ -205,16 +235,11 @@ export default function Game({
             </div>
           ))}
         </div>
-        <div className="w-full flex justify-center gap-5 text-center px-5">
-          <div className="w-1/2 md:w-80 bg-Sage p-3 md:p-6 rounded-xl flex flex-col md:flex-row md:justify-between gap-3">
-            <div className="text-2xl text-Yellow">Time</div>
-            <Timer timer={timer} />
-          </div>
-          <div className="w-1/2 md:w-80 bg-Sage p-3 md:p-6 rounded-xl flex flex-col md:flex-row md:justify-between gap-3">
-            <div className="text-2xl text-Yellow">Moves </div>
-            <div className="text-3xl text-Beige">{moves}</div>
-          </div>
-        </div>
+        {rules.players === '1' ? (
+          <SinglePlayer timer={timer} moves={moves} />
+        ) : (
+          <Multiplayer multiplayerScore={multiplayerScore} />
+        )}
       </div>
     </>
   );
