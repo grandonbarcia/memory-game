@@ -12,9 +12,31 @@ export default function Home() {
     grid: '4x4',
   });
   const [readyToPlay, setReady] = useState(false);
+  const [multiplayerScore, setMultiPlayerScore] = useState(generatePlayers());
+  const [moves, countMoves] = useState(0);
+
+  function generatePlayers() {
+    if (rules.players === '1') return;
+    let players: any = [];
+    const forPlayerOne = { score: 0, turn: true };
+    const forRestOfPlayers = { score: 0, turn: false };
+    for (let i = 1; i <= parseInt(rules.players); i++) {
+      if (i === 1) {
+        players.push(forPlayerOne);
+      } else {
+        players.push(forRestOfPlayers);
+      }
+    }
+
+    return JSON.parse(JSON.stringify(players));
+  }
 
   useEffect(() => {
-    console.log(rules);
+    console.log(multiplayerScore);
+  }, [multiplayerScore]);
+
+  useEffect(() => {
+    setMultiPlayerScore(generatePlayers());
   }, [rules]);
 
   function game(status: string) {
@@ -28,7 +50,17 @@ export default function Home() {
           />
         );
       case 'game':
-        return <Game rules={rules} status={status} setStatus={setStatus} />;
+        return (
+          <Game
+            rules={rules}
+            status={status}
+            setStatus={setStatus}
+            moves={moves}
+            countMoves={countMoves}
+            multiplayerScore={multiplayerScore}
+            setMultiPlayerScore={setMultiPlayerScore}
+          />
+        );
       case 'end':
         return <End />;
     }
