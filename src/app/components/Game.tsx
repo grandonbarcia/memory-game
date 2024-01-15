@@ -37,8 +37,6 @@ export default function Game({
   const windowSize = useWindowSize();
   const icons = useIcons();
 
-  useEffect(() => console.log(data), [data]);
-
   useEffect(() => {
     let interval: number;
     if (gameStart) {
@@ -184,24 +182,37 @@ export default function Game({
           cloneArr[first[0]][first[1]] = false;
           cloneArr[second[0]][second[1]] = false;
           setShow([...cloneArr]);
-
           nextTurn();
         } else {
+          setMultiPlayerScore((prevState: []) => {
+            const newState = prevState.map(
+              (el: { score: number; turn: boolean }) =>
+                el.turn ? { ...el, score: el.score + 1 } : { ...el }
+            );
+
+            return newState;
+          });
           nextTurn();
         }
-        if (rules.player === '1') {
+        if (rules.players === '1') {
           countMoves((prevMoves) => prevMoves + 1);
         } else {
-          console.log('hahah');
           setMultiPlayerScore((prevState: []) => {
-            console.log(prevState);
-            const currentTurn = prevState.findIndex(
+            let currentTurn = prevState.findIndex(
               (el: { score: number; turn: boolean }) => el.turn
             );
-            console.log(currentTurn);
-            const nextTurn = currentTurn + 1;
 
-            return prevState;
+            currentTurn++;
+            if (currentTurn === prevState.length) {
+              currentTurn = 0;
+            }
+            const newState = prevState.map(
+              (el: { score: number; turn: boolean }, idx: number) =>
+                idx === currentTurn
+                  ? { ...el, turn: true }
+                  : { ...el, turn: false }
+            );
+            return newState;
           });
         }
       }, 1000);
