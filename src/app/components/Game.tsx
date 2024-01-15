@@ -7,12 +7,21 @@ import Timer from './Timer';
 import useIcons from '../hooks/useIcons';
 import SinglePlayer from './SinglePlayer';
 import Multiplayer from './MultiPlayer';
+import EndGameModal from './EndGameModal';
 
 export default function Game({
   rules,
   status,
   setStatus,
+  moves,
+  countMoves,
+  multiplayerScore,
+  setMultiPlayerScore,
 }: {
+  moves: any;
+  countMoves: any;
+  multiplayerScore: any;
+  setMultiPlayerScore: any;
   rules: any;
   status: string;
   setStatus: any;
@@ -24,10 +33,12 @@ export default function Game({
   const [second, setSecond] = useState<number[]>([]);
 
   const [timer, setTimer] = useState(0);
-  const [moves, countMoves] = useState(0);
+
   const [gameStart, startGame] = useState(false);
 
-  const [multiplayerScore, setMultiPlayerScore] = useState(generatePlayers());
+  const [count, setCount] = useState(0);
+
+  const [showModal, setShowModal] = useState(true);
 
   const score = {
     player1: { score: 0, turn: true },
@@ -47,6 +58,14 @@ export default function Game({
 
     return () => clearInterval(interval);
   }, [gameStart]);
+
+  useEffect(() => {
+    console.log(count);
+    console.log(rules);
+    if (rules.grid === '4x4' && count === 8) {
+      setStatus('end');
+    }
+  }, [count]);
 
   function generatePlayers() {
     if (rules.player === '1') return;
@@ -184,18 +203,21 @@ export default function Game({
           setShow([...cloneArr]);
           nextTurn();
         } else {
-          setMultiPlayerScore((prevState: []) => {
-            const newState = prevState.map(
-              (el: { score: number; turn: boolean }) =>
-                el.turn ? { ...el, score: el.score + 1 } : { ...el }
-            );
-
-            return newState;
-          });
           nextTurn();
+          setCount(count + 1);
+          if (rules.players !== '1') {
+            setMultiPlayerScore((prevState: []) => {
+              const newState = prevState.map(
+                (el: { score: number; turn: boolean }) =>
+                  el.turn ? { ...el, score: el.score + 1 } : { ...el }
+              );
+
+              return newState;
+            });
+          }
         }
         if (rules.players === '1') {
-          countMoves((prevMoves) => prevMoves + 1);
+          countMoves((prevMoves: any) => prevMoves + 1);
         } else {
           setMultiPlayerScore((prevState: []) => {
             let currentTurn = prevState.findIndex(
@@ -263,6 +285,7 @@ export default function Game({
           <Multiplayer multiplayerScore={multiplayerScore} />
         )}
       </div>
+      {<EndGameModal showModal={showModal} />}
     </>
   );
 }
