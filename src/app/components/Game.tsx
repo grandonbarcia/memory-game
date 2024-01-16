@@ -38,7 +38,7 @@ export default function Game({
 
   const [count, setCount] = useState(0);
 
-  const [showModal, setShowModal] = useState(true);
+  const [showModal, setShowModal] = useState(false);
 
   const score = {
     player1: { score: 0, turn: true },
@@ -63,7 +63,8 @@ export default function Game({
     console.log(count);
     console.log(rules);
     if (rules.grid === '4x4' && count === 8) {
-      setStatus('end');
+      startGame(false);
+      setShowModal(true);
     }
   }, [count]);
 
@@ -145,11 +146,15 @@ export default function Game({
     setSecond([]);
     setTimer(0);
     countMoves(0);
+    setShowModal(false);
+    startGame(false);
   }
 
   function createNewGame() {
     setShow(coverBoard());
     setStatus('menu');
+    setShowModal(false);
+    countMoves(0);
   }
 
   function handleClick(colIdx: number, rowIdx: number) {
@@ -285,7 +290,15 @@ export default function Game({
           <Multiplayer multiplayerScore={multiplayerScore} />
         )}
       </div>
-      {<EndGameModal showModal={showModal} />}
+      {
+        <EndGameModal
+          showModal={showModal}
+          timer={timer}
+          moves={moves}
+          restartGame={restartGame}
+          createNewGame={createNewGame}
+        />
+      }
     </>
   );
 }
