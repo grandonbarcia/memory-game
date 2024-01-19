@@ -34,8 +34,6 @@ export default function EndGameModal({
       return el === highestScore;
     }) + 1;
 
-  console.log(tie);
-
   function SinglePlayerEnd() {
     return (
       <>
@@ -57,6 +55,7 @@ export default function EndGameModal({
           const thisPlayerwins = winner == index + 1;
           return (
             <div
+              key={index}
               className={`w-full ${
                 thisPlayerwins || tie ? 'bg-Sage' : ''
               }  p-3 md:p-6 rounded-xl flex flex-col md:flex-row md:justify-between gap-3`}

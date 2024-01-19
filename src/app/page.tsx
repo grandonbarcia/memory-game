@@ -32,7 +32,7 @@ export default function Home() {
 
   useEffect(() => {
     setMultiPlayerScore(generatePlayers());
-  }, [rules]);
+  }, [rules, generatePlayers]);
 
   function game(status: string) {
     switch (status) {
