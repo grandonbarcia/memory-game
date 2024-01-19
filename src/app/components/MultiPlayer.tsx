@@ -29,6 +29,7 @@ export default function Multiplayer({
       {multiplayerScore.map(
         (player: { score: number; turn: boolean }, index: number) => (
           <PlayerBlock
+            key={index}
             score={player.score}
             turn={player.turn}
             index={index + 1}
