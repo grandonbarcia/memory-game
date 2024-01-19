@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import StartMenu from './components/StartMenu';
 import Game from './components/Game';
-import End from './components/End';
 export default function Home() {
   const [status, setStatus] = useState('menu');
   const [rules, setRules] = useState({
@@ -32,10 +31,6 @@ export default function Home() {
   }
 
   useEffect(() => {
-    console.log(multiplayerScore);
-  }, [multiplayerScore]);
-
-  useEffect(() => {
     setMultiPlayerScore(generatePlayers());
   }, [rules]);
 
@@ -62,8 +57,6 @@ export default function Home() {
             generatePlayers={generatePlayers}
           />
         );
-      case 'end':
-        return <End />;
     }
   }
 

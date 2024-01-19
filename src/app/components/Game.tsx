@@ -2,12 +2,15 @@
 
 import { useState, useEffect, use } from 'react';
 import useWindowSize from '../hooks/useWindowSize';
-import ModalButton from './Modal';
+import ModalButton from './MobileModal';
 import Timer from './Timer';
 import useIcons from '../hooks/useIcons';
 import SinglePlayer from './SinglePlayer';
 import Multiplayer from './MultiPlayer';
 import EndGameModal from './EndGameModal';
+import RestartButton from './RestartButton';
+import NewGameButton from './NewGameButton';
+import GameTitle from './GameTitle';
 
 export default function Game({
   rules,
@@ -28,11 +31,11 @@ export default function Game({
   setStatus: any;
   generatePlayers: () => void;
 }) {
-  const [data, setData] = useState(createNewBoard());
-  const [show, setShow] = useState(coverBoard());
+  const [value, setValue] = useState(createNewBoard());
+  const [coveredValues, setCoveredValues] = useState(coverBoard());
   const [clicked, setClicked] = useState(0);
-  const [first, setFirst] = useState<number[]>([]);
-  const [second, setSecond] = useState<number[]>([]);
+  const [firstClickLocation, setFirstClickLocation] = useState<number[]>([]);
+  const [secondClickLocation, setSecondClickLocation] = useState<number[]>([]);
 
   const [timer, setTimer] = useState(0);
   const [gameStart, startGame] = useState(false);
@@ -61,6 +64,11 @@ export default function Game({
 
   useEffect(() => {
     if (rules.grid === '4x4' && count === 8) {
+      startGame(false);
+      setShowModal(true);
+    }
+
+    if (rules.grid === '6x6' && count === 18) {
       startGame(false);
       setShowModal(true);
     }
@@ -117,15 +125,15 @@ export default function Game({
 
   function nextTurn() {
     setClicked(0);
-    setFirst([]);
-    setSecond([]);
+    setFirstClickLocation([]);
+    setSecondClickLocation([]);
   }
 
   function restartGame() {
-    setShow(coverBoard());
+    setCoveredValues(coverBoard());
     setClicked(0);
-    setFirst([]);
-    setSecond([]);
+    setFirstClickLocation([]);
+    setSecondClickLocation([]);
     setTimer(0);
     countMoves(0);
     setShowModal(false);
@@ -134,46 +142,32 @@ export default function Game({
   }
 
   function createNewGame() {
-    setShow(coverBoard());
+    setCoveredValues(coverBoard());
     setStatus('menu');
     setShowModal(false);
     countMoves(0);
   }
 
-  function handleClick(colIdx: number, rowIdx: number) {
+  function UncoverClickedValue(colIdx: number, rowIdx: number) {
     startGame(true);
     if (clicked < 2) {
-      let cloneArr = [...show!];
-      cloneArr[colIdx][rowIdx] = true;
-      setShow([...cloneArr]);
+      const cloneCoveredValues = JSON.parse(JSON.stringify(coveredValues));
+      cloneCoveredValues[colIdx][rowIdx] = true;
+      setCoveredValues([...cloneCoveredValues]);
       setClicked(clicked + 1);
-      if (first.length === 0) {
-        setFirst([colIdx, rowIdx]);
+      if (firstClickLocation.length === 0) {
+        setFirstClickLocation([colIdx, rowIdx]);
       } else {
-        setSecond([colIdx, rowIdx]);
+        setSecondClickLocation([colIdx, rowIdx]);
       }
     }
   }
 
-  function RegularButton() {
+  function RegularButtonRow() {
     return (
       <div>
-        <button
-          className="py-2.5 px-5 me-2 mb-2 text-3xl font-medium text-gray-900 focus:outline-none 
-          bg-Sage
-         rounded-full border border-gray-200 hover:bg-gray-100 hover:text-Beige focus:z-10 focus:ring-4 focus:ring-gray-200 "
-          onClick={restartGame}
-        >
-          restart
-        </button>
-        <button
-          className="py-2.5 px-5 me-2 mb-2 text-3xl font-medium text-gray-900 focus:outline-none 
-          
-         rounded-full border border-gray-200 hover:bg-gray-100 hover:text-Beige focus:z-10 focus:ring-4 focus:ring-gray-200 "
-          onClick={createNewGame}
-        >
-          new game
-        </button>
+        <RestartButton restartGame={restartGame} />
+        <NewGameButton createNewGame={createNewGame} />
       </div>
     );
   }
@@ -181,14 +175,15 @@ export default function Game({
   useEffect(() => {
     if (clicked === 2) {
       const timer = setTimeout(() => {
-        const firstClick = data![first[0]][first[1]];
-        const secondClick = data![second[0]][second[1]];
+        const firstClick = value![firstClickLocation[0]][firstClickLocation[1]];
+        const secondClick =
+          value![secondClickLocation[0]][secondClickLocation[1]];
 
         if (firstClick !== secondClick) {
-          let cloneArr = [...show!];
-          cloneArr[first[0]][first[1]] = false;
-          cloneArr[second[0]][second[1]] = false;
-          setShow([...cloneArr]);
+          let cloneArr = JSON.parse(JSON.stringify(coveredValues));
+          cloneArr[firstClickLocation[0]][firstClickLocation[1]] = false;
+          cloneArr[secondClickLocation[0]][secondClickLocation[1]] = false;
+          setCoveredValues([...cloneArr]);
           nextTurn();
         } else {
           nextTurn();
@@ -234,13 +229,13 @@ export default function Game({
     <>
       <div className="h-screen w-screen flex flex-col items-center justify-center ">
         <div className="flex w-4/5 md:w-2/3 lg:w-2/3 items-center justify-between">
-          <div className="text-4xl">memory game</div>
+          <GameTitle />
           <div className="flex justify-between">
-            {windowSize.width < 768 ? <ModalButton /> : <RegularButton />}
+            {windowSize.width < 768 ? <ModalButton /> : <RegularButtonRow />}
           </div>
         </div>
         <div className="h-[60vh] w-full sm:h-[70vh]  flex justify-center items-center flex-col gap-5 px-5 ">
-          {data!.map((row, rowIdx) => (
+          {value!.map((row, rowIdx) => (
             <div
               key={rowIdx}
               className="flex gap-3 w-full text-center justify-center items-center"
@@ -252,14 +247,14 @@ export default function Game({
                     rules.grid === '6x6' ? 'sm:w-20 sm:h-20' : 'sm:w-32 sm:h-32'
                   }`}
                 >
-                  {show![rowIdx][colIdx] ? (
+                  {coveredValues![rowIdx][colIdx] ? (
                     <div className="text-7xl text-Yellow">
                       {rules.theme === 'numbers' ? col : icons[col]}
                     </div>
                   ) : (
                     <div
                       className="h-full w-full bg-Beige rounded-full"
-                      onClick={() => handleClick(rowIdx, colIdx)}
+                      onClick={() => UncoverClickedValue(rowIdx, colIdx)}
                     ></div>
                   )}
                 </div>

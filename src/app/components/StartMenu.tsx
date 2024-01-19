@@ -1,6 +1,7 @@
 'use client';
 
-import { use, useEffect, useState } from 'react';
+import { ReactComponentElement, use, useEffect, useState } from 'react';
+import GameTitle from './GameTitle';
 
 export default function StartMenu({
   setRules,
@@ -35,36 +36,6 @@ export default function StartMenu({
       grid: '4x4',
     });
   }, []);
-
-  function Title({ children }: { children: string }) {
-    return <h3 className="text-2xl">{children}</h3>;
-  }
-
-  function Button({
-    children,
-    width,
-    category,
-    isSelected,
-    idx,
-  }: {
-    children: string;
-    width: string;
-    category: string;
-    isSelected: boolean;
-    idx: number;
-  }) {
-    return (
-      <button
-        type="button"
-        onClick={() => handleClick(children, category, isSelected, idx)}
-        className={`${width} py-2.5 px-5 me-2 mb-2 text-3xl font-medium text-gray-900 focus:outline-none ${
-          isSelected ? 'bg-Sage' : 'bg-white'
-        } rounded-full border border-gray-200 hover:bg-gray-100 hover:text-Beige focus:z-10 focus:ring-4 focus:ring-gray-200 `}
-      >
-        {children}
-      </button>
-    );
-  }
 
   function handleClick(
     name: string,
@@ -114,13 +85,59 @@ export default function StartMenu({
     );
   }
 
+  function Title({ children }: { children: string }) {
+    return <h3 className="text-2xl">{children}</h3>;
+  }
+
+  function SelectOptionsRow({ children }: { children: Iterable<JSX.Element> }) {
+    return <div className="flex justify-evenly">{children}</div>;
+  }
+
+  function Category() {
+    return <div></div>;
+  }
+
+  function MenuContainer({ children }: { children: JSX.Element[] }) {
+    return (
+      <div className=" h-[30.25rem] w-[40.25rem] flex flex-col gap-5 bg-white rounded-2xl p-10">
+        {children}
+      </div>
+    );
+  }
+
+  function Button({
+    children,
+    width,
+    category,
+    isSelected,
+    idx,
+  }: {
+    children: string;
+    width: string;
+    category: string;
+    isSelected: boolean;
+    idx: number;
+  }) {
+    return (
+      <button
+        type="button"
+        onClick={() => handleClick(children, category, isSelected, idx)}
+        className={`${width} py-2.5 px-5 me-2 mb-2 text-3xl font-medium text-gray-900 focus:outline-none ${
+          isSelected ? 'bg-Sage' : 'bg-white'
+        } rounded-full border border-gray-200 hover:bg-gray-100 hover:text-Beige focus:z-10 focus:ring-4 focus:ring-gray-200 `}
+      >
+        {children}
+      </button>
+    );
+  }
+
   return (
     <section className="h-screen w-screen flex flex-col items-center justify-center bg-Green gap-5">
-      <h1 className="text-5xl">Memory</h1>
-      <div className=" h-[30.25rem] w-[40.25rem] flex flex-col gap-5 bg-white rounded-2xl p-10">
-        <div className="3">
+      <GameTitle />
+      <MenuContainer>
+        <div>
           <Title>select theme</Title>
-          <div className="flex justify-evenly">
+          <SelectOptionsRow>
             {listOfOptions.theme.map((option, idx) => (
               <Button
                 key={idx}
@@ -132,11 +149,11 @@ export default function StartMenu({
                 {option.name}
               </Button>
             ))}
-          </div>
+          </SelectOptionsRow>
         </div>
         <div>
           <Title>number of players</Title>
-          <div className="flex justify-evenly">
+          <SelectOptionsRow>
             {listOfOptions.players.map((option, idx) => (
               <Button
                 key={idx}
@@ -148,11 +165,11 @@ export default function StartMenu({
                 {option.name}
               </Button>
             ))}
-          </div>
+          </SelectOptionsRow>
         </div>
         <div>
           <Title>Grid Size</Title>
-          <div className="flex justify-evenly">
+          <SelectOptionsRow>
             {listOfOptions.grid.map((option, idx) => (
               <Button
                 key={idx}
@@ -164,12 +181,12 @@ export default function StartMenu({
                 {option.name}
               </Button>
             ))}
-          </div>
+          </SelectOptionsRow>
         </div>
         <div>
           <StartButton readyToPlay={readyToPlay}>Start Game</StartButton>
         </div>
-      </div>
+      </MenuContainer>
     </section>
   );
 }
