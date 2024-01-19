@@ -17,6 +17,7 @@ export default function Game({
   countMoves,
   multiplayerScore,
   setMultiPlayerScore,
+  generatePlayers,
 }: {
   moves: any;
   countMoves: any;
@@ -25,6 +26,7 @@ export default function Game({
   rules: any;
   status: string;
   setStatus: any;
+  generatePlayers: () => void;
 }) {
   const [data, setData] = useState(createNewBoard());
   const [show, setShow] = useState(coverBoard());
@@ -33,11 +35,9 @@ export default function Game({
   const [second, setSecond] = useState<number[]>([]);
 
   const [timer, setTimer] = useState(0);
-
   const [gameStart, startGame] = useState(false);
 
   const [count, setCount] = useState(0);
-
   const [showModal, setShowModal] = useState(false);
 
   const score = {
@@ -60,29 +60,11 @@ export default function Game({
   }, [gameStart]);
 
   useEffect(() => {
-    console.log(count);
-    console.log(rules);
     if (rules.grid === '4x4' && count === 8) {
       startGame(false);
       setShowModal(true);
     }
   }, [count]);
-
-  function generatePlayers() {
-    if (rules.player === '1') return;
-    let players: any = [];
-    const forPlayerOne = { score: 0, turn: true };
-    const forRestOfPlayers = { score: 0, turn: false };
-    for (let i = 1; i <= rules.players; i++) {
-      if (i === 1) {
-        players.push(forPlayerOne);
-      } else {
-        players.push(forRestOfPlayers);
-      }
-    }
-
-    return JSON.parse(JSON.stringify(players));
-  }
 
   function coverBoard() {
     const num = parseInt(rules.grid.split('').shift());
@@ -148,6 +130,7 @@ export default function Game({
     countMoves(0);
     setShowModal(false);
     startGame(false);
+    setMultiPlayerScore(generatePlayers());
   }
 
   function createNewGame() {
@@ -297,6 +280,8 @@ export default function Game({
           moves={moves}
           restartGame={restartGame}
           createNewGame={createNewGame}
+          rules={rules}
+          multiplayerScore={multiplayerScore}
         />
       }
     </>
