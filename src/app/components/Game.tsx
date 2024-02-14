@@ -52,14 +52,12 @@ export default function Game({
   const icons = useIcons();
 
   useEffect(() => {
-    let interval: number;
+    let gameTimer: number;
     if (gameStart) {
-      interval = window.setInterval(() => {
-        setTimer((prevTime: number) => prevTime + 1);
-      }, 1000);
+      gameTimer = startTimer();
     }
 
-    return () => clearInterval(interval);
+    return () => clearInterval(gameTimer);
   }, [gameStart]);
 
   useEffect(() => {
@@ -73,6 +71,12 @@ export default function Game({
       setShowModal(true);
     }
   }, [count]);
+
+  function startTimer() {
+    return window.setInterval(() => {
+      setTimer((prevTime: number) => prevTime + 1);
+    }, 1000);
+  }
 
   function coverBoard() {
     const num = parseInt(rules.grid.split('').shift());
