@@ -40,7 +40,7 @@ export default function Game({
   const [timer, setTimer] = useState(0);
   const [gameStart, startGame] = useState(false);
 
-  const [count, setCount] = useState(0);
+  const [pairsFound, setPairsFound] = useState(0);
   const [showModal, setShowModal] = useState(false);
 
   const score = {
@@ -50,6 +50,11 @@ export default function Game({
 
   const windowSize = useWindowSize();
   const icons = useIcons();
+
+  type Player = {
+    turn: boolean;
+    score: number;
+  };
 
   useEffect(() => {
     let gameTimer: number;
@@ -61,16 +66,14 @@ export default function Game({
   }, [gameStart]);
 
   useEffect(() => {
-    if (rules.grid === '4x4' && count === 8) {
-      startGame(false);
-      setShowModal(true);
+    if (rules.grid === '4x4' && pairsFound === 8) {
+      endGame();
     }
 
-    if (rules.grid === '6x6' && count === 18) {
-      startGame(false);
-      setShowModal(true);
+    if (rules.grid === '6x6' && pairsFound === 18) {
+      endGame();
     }
-  }, [count]);
+  }, [pairsFound]);
 
   function startTimer() {
     return window.setInterval(() => {
@@ -152,6 +155,11 @@ export default function Game({
     countMoves(0);
   }
 
+  function endGame() {
+    startGame(false);
+    setShowModal(true);
+  }
+
   function UncoverClickedValue(colIdx: number, rowIdx: number) {
     startGame(true);
     if (clicked < 2) {
@@ -191,12 +199,13 @@ export default function Game({
           nextTurn();
         } else {
           nextTurn();
-          setCount(count + 1);
+          setPairsFound(pairsFound + 1);
           if (rules.players !== '1') {
             setMultiPlayerScore((prevState: []) => {
-              const newState = prevState.map(
-                (el: { score: number; turn: boolean }) =>
-                  el.turn ? { ...el, score: el.score + 1 } : { ...el }
+              const newState = prevState.map((player: Player) =>
+                player.turn
+                  ? { ...player, score: player.score + 1 }
+                  : { ...player }
               );
 
               return newState;
