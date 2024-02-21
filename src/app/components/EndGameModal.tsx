@@ -21,18 +21,24 @@ export default function EndGameModal({
   rules: any;
   multiplayerScore: any;
 }) {
-  const listOfScores = multiplayerScore.map((el: any) => el.score);
-  const tie = listOfScores.every((score: number) => score === listOfScores[0]);
-  const highestScore = listOfScores.reduce(
-    (largest: number, current: number, idx: number) =>
-      current > largest ? current : largest,
-    listOfScores[0]
-  );
+  let listOfScores: [number];
+  let tie = false;
+  let highestScore: number;
+  let winner = 0;
 
-  const winner =
-    listOfScores.findIndex((el: number) => {
-      return el === highestScore;
-    }) + 1;
+  if (rules.players !== '1') {
+    listOfScores = multiplayerScore.map((el: any) => el.score);
+    tie = listOfScores.every((score: number) => score === listOfScores[0]);
+    highestScore = listOfScores.reduce(
+      (largest: number, current: number, idx: number) =>
+        current > largest ? current : largest,
+      listOfScores[0]
+    );
+    winner =
+      listOfScores.findIndex((el: number) => {
+        return el === highestScore;
+      }) + 1;
+  }
 
   function SinglePlayerEnd() {
     return (
@@ -69,6 +75,8 @@ export default function EndGameModal({
     );
   }
 
+  console.log(rules);
+
   return (
     <>
       {showModal ? (
@@ -92,7 +100,7 @@ export default function EndGameModal({
                     Game over! Here's how you did!
                   </h1>
                   <div className="w-full flex flex-col justify-center gap-5 text-center ">
-                    {rules.player === '1' ? (
+                    {rules.players === '1' ? (
                       <SinglePlayerEnd />
                     ) : (
                       <MultiPlayerEnd />
