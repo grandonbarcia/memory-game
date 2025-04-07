@@ -35,6 +35,6 @@ Players click each circle to unmask each number to match
 
 ![](/public/img/MG3.PNG)
 
-When finised, a score and time is presented
+When finished, a score and time is presented
 
 ![](/public/img/MG4.PNG)
